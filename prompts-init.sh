@@ -8,8 +8,6 @@ set -e
 # 源文件路径（脚本所在目录）
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SOURCE_FILE="$SCRIPT_DIR/AGENTS.md"
-TEMPLATES_DIR="$SCRIPT_DIR/templates"
-PERSONAS_DIR="$SCRIPT_DIR/personas"
 
 # 颜色定义
 GREEN='\033[0;32m'
@@ -110,24 +108,18 @@ create_dir_symlink() {
 # 为 Codex 创建链接
 # Codex 使用 ~/.codex/instructions.md 作为全局指令文件
 create_symlink "codex" "$HOME/.codex" "AGENTS.md"
-create_dir_symlink "$TEMPLATES_DIR" "$HOME/.codex" "templates"
-create_dir_symlink "$PERSONAS_DIR" "$HOME/.codex" "personas"
 
 echo ""
 
 # 为 Claude 创建链接
 # Claude 可以使用 CLAUDE.md 或通过 --system-prompt-file 指定
 create_symlink "claude" "$HOME/.claude" "CLAUDE.md"
-create_dir_symlink "$TEMPLATES_DIR" "$HOME/.claude" "templates"
-create_dir_symlink "$PERSONAS_DIR" "$HOME/.claude" "personas"
 
 echo ""
 
 # 为 Gemini 创建链接
 # Gemini 配置目录
 create_symlink "gemini" "$HOME/.gemini" "GEMINI.md"
-create_dir_symlink "$TEMPLATES_DIR" "$HOME/.gemini" "templates"
-create_dir_symlink "$PERSONAS_DIR" "$HOME/.gemini" "personas"
 
 echo ""
 echo "========================================="
@@ -136,12 +128,6 @@ echo "========================================="
 echo ""
 echo "使用说明:"
 echo "  • Codex: 会自动加载 ~/.codex/AGENTS.md"
-echo "    - 模板文件: ~/.codex/templates/"
-echo "    - 角色定义: ~/.codex/personas/"
 echo "  • Claude: 使用 'claude --system-prompt-file ~/.claude/CLAUDE.md' 或在项目中使用 CLAUDE.md"
-echo "    - 模板文件: ~/.claude/templates/"
-echo "    - 角色定义: ~/.claude/personas/"
 echo "  • Gemini: 配置文件位于 ~/.gemini/GEMINI.md"
-echo "    - 模板文件: ~/.gemini/templates/"
-echo "    - 角色定义: ~/.gemini/personas/"
 echo ""
