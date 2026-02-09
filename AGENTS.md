@@ -6,11 +6,13 @@
 
 说明：此处为冲突裁决优先级，不是执行步骤。
 
+0. 如果项目中存在 `AGENTS.md`（项目根目录或 `.agent/AGENTS.md`），则务必阅读；若其内容与本文冲突，以项目中的为准。
 1. 用户在当前对话中的明确指令（含“一步一步做/分步确认”）。
-2. 规格/需求/API 文档（如存在）。
-3. 执行前确认门（见下文）。
-4. 任务分级与边界（Simple/Complex）。
-5. 默认连续性优先（除非用户要求分步确认）+ 阶段汇报。
+2. 当用户明确提出不需要确认时，Agent 可直接进入执行（Coding -> Verification -> Fix），无需执行`执行前确认门`等待用户再次回复“OK/确认”。
+3. 规格/需求/API 文档（如存在）。
+4. 执行前确认门（见下文）。
+5. 任务分级与边界（Simple/Complex）。
+6. 默认连续性优先（除非用户要求分步确认）+ 阶段汇报。
 
 推荐执行流程（简版）：
 
@@ -27,7 +29,16 @@
   - 中英混合/术语英文 → 中文为主，保留原术语
   - 默认场景 → 简体中文
   - 代码注释/文档 → 遵循项目既定风格；若无则与提问语言一致
-  - git commit 消息：遵循 [Conventional Commits] 规范，消息简短清晰。类型：`feat` | `fix` | `docs` | `style` | `refactor` | `perf` | `test` | `chore`；英文，首字母小写，不加句号；示例：`feat(auth): add JWT refresh token support`
+  - git commit 消息：遵循 [Conventional Commits] 规范。类型：`feat` | `fix` | `docs` | `style` | `refactor` | `perf` | `test` | `chore`；英文，首字母小写，不加句号。第一行（subject）保持简短清晰（建议 ≤72 chars），需要更长说明写在 body（空一行后）。示例：
+
+    ```text
+    feat(auth): rotate refresh tokens and detect reuse
+
+    - persist token family + last-seen jti for reuse detection
+    - invalidate token chain and require re-login on reuse
+    - add /auth/refresh endpoint tests (happy path + replay)
+    ```
+
 - 安全：禁止恶意代码；不得绕过权限/删除安全控制；敏感数据最小暴露。
 - 规格优先：若存在 Spec/需求/API 文档，以其为准；有歧义先澄清再实施。
 - 作用域：不与“用户当前对话明确指令”冲突时，就近/更具体的项目规则优先（如 repo 内 `AGENTS*.md`/Spec/README 等）。
@@ -35,6 +46,10 @@
   - 路径约定：默认 `.agent/` 指“当前仓库/项目根目录下的 `.agent/`”。若项目内不存在但用户主目录存在 `~/.agent/`，则以用户明确指定为准；若两者同时存在且无明确指定，优先使用项目内 `.agent/`。
 - Git：除非用户说明，否则绝对不自动执行 git 操作（如：add/commit/push/force push/改写历史）。
   - 仅允许默认执行以下只读 git 命令：`git status`、`git diff`、`git log`、`git show`、`git blame`；其他 git 命令需用户明确要求。
+- **复杂任务留痕（TASK）**：复杂任务（Complex）按 `AGENTS-COMPLEX.md` 创建并维护 `<project>/.agent/TASK-*.md`（模板见 `~/.agent/templates/TASK.md`），用于记录关键决策、验证步骤与结果、以及残余风险/待验证项。
+- **子代理并行协作（仅 Complex 强制）**：子代理用于“并行检索/独立复核/对手质询”等只读工作；所有写操作（尤其 `apply_patch`、移动/删除等破坏性动作）仅允许主代理执行；启用规则与记录要求见 `AGENTS-COMPLEX.md`。
+- **风险透明**：无法覆盖/无法验证/仍有争议的点，必须显式标注“残余风险/待验证项”，并给出下一步验证建议（写入 TASK 或在最终答复中列出）。
+- **持续自检与纠偏**：在分析/规划/实现/测试/调试任一阶段，遇到不确定性、关键决策、失败或范围变化时，必须触发“自检-纠偏”检查点；复杂任务写入 TASK 的“自检-纠偏记录”，否则在最终答复中显式记录结论与后续验证建议（避免仅依赖对话上下文）。
 
 ## 2. 执行前确认门
 
