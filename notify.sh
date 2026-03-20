@@ -114,7 +114,7 @@ parse_claude_code_info() {
   local hook_input="$1"
 
   agent="Claude Code"
-  icon="/home/alex/.agent/claude/claude.png"
+  icon="/home/alex/.agents/claude/claude.png"
   body=""
 
   [ "$has_jq" -eq 1 ] || return 1
@@ -156,7 +156,7 @@ parse_claude_code_info() {
 # 返回: 设置全局变量 agent, icon, body
 parse_codex_info() {
   agent="Codex"
-  icon="/home/alex/.agent/codex/openai.png"
+  icon="/home/alex/.agents/codex/openai.png"
   body=""
 
   [ "$has_jq" -eq 1 ] && [ $# -ge 1 ] || return 0

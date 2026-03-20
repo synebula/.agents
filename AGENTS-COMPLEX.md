@@ -12,8 +12,8 @@
 
 检查清单（按需裁剪，但不要跳过高风险项）：
 
-- [ ] 读取规格文档（如存在）：`SPEC.md`、`docs/spec/`、`docs/api/`、`.agent/SPEC.md`
-- [ ] 读取项目根 `.agent/CONTEXT.md`（若存在）；并按路径自顶向下读取相关目录的 `.agent/CONTEXT.md`
+- [ ] 读取规格文档（如存在）：`SPEC.md`、`docs/spec/`、`docs/api/`、`.agents/SPEC.md`
+- [ ] 读取项目根 `.agents/CONTEXT.md`（若存在）；并按路径自顶向下读取相关目录的 `.agents/CONTEXT.md`
 - [ ] 阅读相关源码：调用方/被调用方、接口/类型定义、配置/环境变量、测试/示例、相关文档
 - [ ] 阅读 ≥2 个相似实现或测试用例（若代码库中存在）
 - [ ] 查阅官方文档确认正确用法（特别是框架/库的关键 API、配置、迁移指南）
@@ -42,14 +42,14 @@
 
 - [ ] 实现变更并同步更新相关测试/示例/文档
 - [ ] 运行可复现的验证步骤（单测/集成/手工验证，至少覆盖核心路径与边界）
-- [ ] 完成后更新最近的 `.agent/CONTEXT.md`（见下文“项目记忆”）
-- [ ] 若触发“任务过程追踪（TASK）”，创建并持续更新 `.agent/TASK-*.md`（见下文“任务过程追踪”）
+- [ ] 完成后更新最近的 `.agents/CONTEXT.md`（见下文“项目记忆”）
+- [ ] 若触发“任务过程追踪（TASK）”，创建并持续更新 `.agents/TASK-*.md`（见下文“任务过程追踪”）
 
 ## 任务过程追踪（TASK）
 
 ### 1. 何时需要创建 TASK 文档
 
-**决策表**：满足以下条件时必须创建 `.agent/TASK-[任务名].md`：
+**决策表**：满足以下条件时必须创建 `.agents/TASK-[任务名].md`：
 
 | 预计实施阶段 | 涉及模块/目录 | 高风险点                   | 必须 TASK |
 | ------------ | ------------- | -------------------------- | --------- |
@@ -73,21 +73,21 @@ TASK 文档必须包含并持续更新以下内容（可精简，但不可缺失
 - 自检-纠偏记录：关键不确定性/失败/范围变化时的复盘与纠偏动作（若触发）
 - 并行协作记录：启用子代理或多角色复核时，记录分工、证据与采纳结论（若启用）
 
-模板：`~/.agent/templates/TASK.md`
+模板：`~/.agents/templates/TASK.md`
 
 ## 项目记忆（CONTEXT / CHANGELOG）
 
 ### 1. CONTEXT.md 结构（约定）
 
 ```
-<project>/.agent/CONTEXT.md              # 项目级：全局约定、目录索引
-<project>/.agent/CHANGELOG.md            # 变更历史：按需查阅的完整历史记录
-<module>/.agent/CONTEXT.md               # 模块级：模块边界、关键接口
-<subdir>/.agent/CONTEXT.md               # 目录级：具体实现约定
-<project>/.agent/TASK-[任务名].md       # 任务级：单次任务记录（当需要任务过程追踪时）
+<project>/.agents/CONTEXT.md              # 项目级：全局约定、目录索引
+<project>/.agents/CHANGELOG.md            # 变更历史：按需查阅的完整历史记录
+<module>/.agents/CONTEXT.md               # 模块级：模块边界、关键接口
+<subdir>/.agents/CONTEXT.md               # 目录级：具体实现约定
+<project>/.agents/TASK-[任务名].md       # 任务级：单次任务记录（当需要任务过程追踪时）
 ```
 
-模板：`~/.agent/templates/CONTEXT.md`
+模板：`~/.agents/templates/CONTEXT.md`
 
 设计原则：
 
@@ -104,31 +104,31 @@ Token 控制目标：
 
 ### 2. 读取顺序（复杂任务）
 
-1. 任务开始：读取项目根 `.agent/CONTEXT.md`（若存在）
-2. 访问目录前：按路径自顶向下读取相关目录的 `.agent/CONTEXT.md`（若存在）
+1. 任务开始：读取项目根 `.agents/CONTEXT.md`（若存在）
+2. 访问目录前：按路径自顶向下读取相关目录的 `.agents/CONTEXT.md`（若存在）
 3. grep/glob 仅作辅助，不可替代项目记忆
 
-若缺失 `.agent/CONTEXT.md`：优先通过源码阅读推进；仅在需要沉淀长期记忆/跨模块协作/架构调整时创建（保持轻量，索引优先）。
+若缺失 `.agents/CONTEXT.md`：优先通过源码阅读推进；仅在需要沉淀长期记忆/跨模块协作/架构调整时创建（保持轻量，索引优先）。
 
 ### 3. 更新要求（复杂任务）
 
-完成修改后，必须更新最贴近的 `.agent/CONTEXT.md`，确保其反映**当前现状**，包含（按需）：
+完成修改后，必须更新最贴近的 `.agents/CONTEXT.md`，确保其反映**当前现状**，包含（按需）：
 
 - 现行结论：当前架构/约定/接口契约（以“现在怎么做”为准）
 - 导航索引：关键目录/入口/关键文件/命令（便于快速定位）
 - 运行与验证方式：怎么运行、怎么验证（写步骤，不写过程日志/结果）
 - 已知限制：当前已知问题、风险点、长期 TODO（如会影响后续协作）
 
-禁止：在 CONTEXT 中追加时间线/变更流水账/验证结果；这些内容写入 `.agent/TASK-*.md`（必要时写 `.agent/CHANGELOG.md`）。
+禁止：在 CONTEXT 中追加时间线/变更流水账/验证结果；这些内容写入 `.agents/TASK-*.md`（必要时写 `.agents/CHANGELOG.md`）。
 
 ### 4. 更新决策规则
 
-- 单目录改动：更新该目录的 `.agent/CONTEXT.md`
-- 跨目录改动：更新共同父目录的 `.agent/CONTEXT.md`
-- 新增模块：创建模块的 `.agent/CONTEXT.md` + 更新项目根
-- 架构性变更：更新项目根 `.agent/CONTEXT.md` + 追加到 `.agent/CHANGELOG.md`
+- 单目录改动：更新该目录的 `.agents/CONTEXT.md`
+- 跨目录改动：更新共同父目录的 `.agents/CONTEXT.md`
+- 新增模块：创建模块的 `.agents/CONTEXT.md` + 更新项目根
+- 架构性变更：更新项目根 `.agents/CONTEXT.md` + 追加到 `.agents/CHANGELOG.md`
 
-CHANGELOG 模板：`~/.agent/templates/CHANGELOG.md`
+CHANGELOG 模板：`~/.agents/templates/CHANGELOG.md`
 
 ## 工具策略（含 MCP）
 

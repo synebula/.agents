@@ -1,1 +1,1 @@
-notify = ["/home/alex/.agent/notify.sh"]
+notify = ["/home/alex/.agents/notify.sh"]

@@ -8,7 +8,7 @@
 
 set -e
 
-AGENT_DIR=".agent"
+AGENT_DIR=".agents"
 HISTORY_DIR="$AGENT_DIR/history"
 DAYS_OLD=30
 
@@ -49,7 +49,7 @@ echo "TASK 文档归档工具"
 echo "========================================"
 echo ""
 
-# 检查 .agent 目录是否存在
+# 检查 .agents 目录是否存在
 if [ ! -d "$AGENT_DIR" ]; then
     echo "错误: $AGENT_DIR 目录不存在"
     exit 1
