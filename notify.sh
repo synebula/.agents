@@ -4,6 +4,12 @@
 
 set -euo pipefail
 # ============================================================================
+# 常量定义
+# ============================================================================
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ============================================================================
 # 工具函数
 # ============================================================================
 
@@ -28,25 +34,38 @@ play_sound() {
 }
 
 # ============================================================================
-# Claude Code 信息提取
+# Stdin Hook (Claude Code / Qoder) 信息提取
 # ============================================================================
 
-# 从 Claude Code hook 输入中提取通知信息
+# 从 stdin hook JSON 输入中提取通知信息
 # 参数: $1=hook_input (JSON)
 # 返回: 设置全局变量 agent, icon, body
-parse_claude_code_info() {
+parse_stdin_hook_info() {
   local hook_input="$1"
-  agent="Claude Code"
-  icon="/home/alex/.agents/claude/claude.png"
   body=""
   command -v jq >/dev/null 2>&1 || return 1
 
   local transcript_path
   transcript_path=$(jq -r '.transcript_path // empty' <<< "$hook_input" 2>/dev/null || true)
 
-  # 优先从本会话 transcript 中解析最后一次 user 输入作为会话 Title
+  # 根据 transcript_path 路径特征区分 Agent
+  if [[ "$transcript_path" == *"/.qoder/"* ]]; then
+    agent="Qoder"
+    icon="$SCRIPT_DIR/clients/qoder/qoder.png"
+  else
+    agent="Claude Code"
+    icon="$SCRIPT_DIR/clients/claude/claude.png"
+  fi
+
+  # 优先从本会话 transcript 中解析最后一次有效 user 输入作为通知正文
   if [ -f "${transcript_path:-}" ]; then
-    body=$(jq -r 'select(.role == "user") | .message.content[] | select(.type == "text") | .text' "$transcript_path" 2>/dev/null | tail -n 1 || true)
+    body=$(jq -r '
+      select((.type == "user" or .role == "user" or .message.role == "user") and (.isMeta | not))
+      | if (.message.content | type) == "string" then .message.content
+        elif (.message.content | type) == "array" then (.message.content[] | select(.type == "text") | .text)
+        elif (.content | type) == "string" then .content
+        else empty end
+    ' "$transcript_path" 2>/dev/null | grep -vE '^<local-command|^<command-name>' | tail -n 1 || true)
   fi
 }
 
@@ -59,7 +78,7 @@ parse_claude_code_info() {
 # 返回: 设置全局变量 agent, icon, body
 parse_codex_info() {
   agent="Codex"
-  icon="/home/alex/.agents/codex/openai.png"
+  icon="$SCRIPT_DIR/clients/codex/openai.png"
   body=""
   command -v jq >/dev/null 2>&1 && [ $# -ge 1 ] || return 0
 
@@ -83,7 +102,7 @@ main() {
 
   # 根据输入来源解析信息
   if [ -n "$hook_input" ]; then
-    parse_claude_code_info "$hook_input"
+    parse_stdin_hook_info "$hook_input"
   else
     parse_codex_info "$@"
   fi
